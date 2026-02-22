@@ -1,5 +1,5 @@
 // =============================================
-// APP.JS - Asosiy ilovani boshqaruvchi modul
+// APP.JS — Accor O'zbekiston / Asosiy Modul
 // =============================================
 
 // ---- Navbar ----
@@ -46,8 +46,8 @@ function renderNavbar(activePage = '') {
   return `
     <nav class="navbar" id="navbar">
       <a href="../index.html" class="navbar-brand">
-        <div class="brand-logo">🏨</div>
-        <span class="brand-text">Mexmon<span>Xona</span></span>
+        <div class="brand-logo" style="background:transparent;font-size:0;width:auto;height:auto"><svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="4" fill="#c9a96e"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Raleway,sans-serif" font-weight="900" font-size="11" fill="#0d0d0d" letter-spacing="1">AC</text></svg></div>
+        <span class="brand-text">ACCOR</span>
       </a>
       <ul class="navbar-nav" id="navbarNav">${navItemsHTML}</ul>
       <div class="navbar-actions" id="navbarActions">${userHTML}</div>
@@ -111,8 +111,8 @@ function renderIndexNavbar(activePage = '') {
   return `
     <nav class="navbar" id="navbar">
       <a href="./index.html" class="navbar-brand">
-        <div class="brand-logo">🏨</div>
-        <span class="brand-text">Mexmon<span>Xona</span></span>
+        <div class="brand-logo" style="background:transparent;font-size:0;width:auto;height:auto"><svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="4" fill="#c9a96e"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Raleway,sans-serif" font-weight="900" font-size="11" fill="#0d0d0d" letter-spacing="1">AC</text></svg></div>
+        <span class="brand-text">ACCOR</span>
       </a>
       <ul class="navbar-nav" id="navbarNav">${navItemsHTML}</ul>
       <div class="navbar-actions" id="navbarActions">${userHTML}</div>
@@ -141,10 +141,10 @@ function renderFooter(isRoot = false) {
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="${isRoot ? './index.html' : '../index.html'}" class="navbar-brand" style="margin-bottom:1rem;display:inline-flex">
-            <div class="brand-logo">🏨</div>
-            <span class="brand-text">Mexmon<span>Xona</span></span>
+            <div class="brand-logo" style="background:transparent;font-size:0;width:auto;height:auto"><svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="4" fill="#c9a96e"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Raleway,sans-serif" font-weight="900" font-size="11" fill="#0d0d0d" letter-spacing="1">AC</text></svg></div>
+            <span class="brand-text">ACCOR</span>
           </a>
-          <p>O'zbekistonning eng yaxshi online mehmonxona bron qilish platformasi. Eng yaxshi narxlar va mukammal xizmat kafolatlanadi.</p>
+          <p>Accor S.A. — Dunyo bo'ylab 110+ mamlakat, 5,700+ mehmonxona. O'zbekistonda Sofitel, Pullman, Novotel, Mövenpick, MGallery, Mercure va ibis brendlari.</p>
           <div class="social-links" style="margin-top:1.25rem">
             <a href="#" class="social-link">📘</a>
             <a href="#" class="social-link">📸</a>
@@ -176,7 +176,7 @@ function renderFooter(isRoot = false) {
           <h4 class="footer-title">Bog'lanish</h4>
           <div class="footer-contact-item">
             <span>📍</span>
-            <span>Toshkent, Amir Temur ko'chasi, 108</span>
+            <span>Toshkent, Amir Temur ko'chasi, 1A</span>
           </div>
           <div class="footer-contact-item">
             <span>📞</span>
@@ -184,17 +184,17 @@ function renderFooter(isRoot = false) {
           </div>
           <div class="footer-contact-item">
             <span>📧</span>
-            <span>info@mexmonxona.uz</span>
+            <span>uzbekistan@accor.com</span>
           </div>
           <div class="footer-contact-item">
-            <span>🕐</span>
-            <span>24/7 xizmat</span>
+            <span>🌐</span>
+            <span>accor.com/uzbekistan</span>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 MexmonXona. Barcha huquqlar himoyalangan.</span>
-        <span>🇺🇿 O'zbekiston</span>
+        <span>© 2026 Accor S.A. — Barcha huquqlar himoyalangan.</span>
+        <span>Euronext: <strong style="color:var(--accent)">AC</strong></span>
       </div>
     </footer>
   `;

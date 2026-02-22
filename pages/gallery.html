@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galereya - MexmonXona</title>
+  <title>Accor Galereyasi — O'zbekiston Mehmonxonalari</title>
   <link rel="stylesheet" href="../styles/main.css">
   <style>
     .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
@@ -21,9 +21,9 @@
 <div style="height:70px"></div>
 
 <section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:4rem 2rem;text-align:center">
-  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">🖼️ Galereya</div>
-  <h1 style="font-family:'Playfair Display',serif;font-size:2.5rem;color:white;margin-top:0.75rem">Mehmonxona Galereyasi</h1>
-  <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem">O'zbekistondagi eng go'zal mehmonxonalar</p>
+  <div class="section-badge" style="background:rgba(201,169,110,0.15);color:var(--accent)">🖼️ Accor Galereyasi</div>
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:white;margin-top:0.75rem;letter-spacing:1px">Accor Mehmonxonalari Galereyasi</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem">Sofitel, Pullman, Novotel va boshqa Accor mehmonxonalari</p>
 </section>
 
 <!-- Category Filter -->
@@ -54,22 +54,22 @@
   document.getElementById('footerContainer').innerHTML = renderFooter();
 
   const galleryImages = [
-    { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800', cat: 'lobby', alt: 'Hilton Lobby' },
-    { url: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800', cat: 'room', alt: 'Delyuks xona' },
-    { url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800', cat: 'room', alt: 'Suite xona' },
-    { url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800', cat: 'room', alt: 'Prezident suite' },
-    { url: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', cat: 'pool', alt: 'Hovuz' },
-    { url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800', cat: 'pool', alt: 'Spa' },
-    { url: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800', cat: 'restaurant', alt: 'Restoran' },
-    { url: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', cat: 'exterior', alt: 'Hotel exterior' },
-    { url: 'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800', cat: 'exterior', alt: 'Hyatt exterior' },
-    { url: 'https://images.unsplash.com/photo-1455587734955-081b22074882?w=800', cat: 'lobby', alt: 'InterContinental Lobby' },
-    { url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800', cat: 'pool', alt: 'Infinity pool' },
-    { url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', cat: 'exterior', alt: 'Mountain view hotel' },
-    { url: 'https://images.unsplash.com/photo-1618245318763-453825cd2d81?w=800', cat: 'lobby', alt: 'Boutique hotel' },
-    { url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800', cat: 'exterior', alt: 'City hotel' },
-    { url: 'https://images.unsplash.com/photo-1524824267900-2b50a8a46e9c?w=800', cat: 'restaurant', alt: 'Fine dining' },
-    { url: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800', cat: 'room', alt: 'Desert view room' },
+    { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800', cat: 'lobby', alt: 'Sofitel Tashkent Lobby' },
+    { url: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800', cat: 'room', alt: 'Sofitel Suite Xona' },
+    { url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800', cat: 'room', alt: 'Pullman Delyuks Xona' },
+    { url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800', cat: 'room', alt: 'Novotel Standart Xona' },
+    { url: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', cat: 'pool', alt: 'Sofitel So Spa Hovuz' },
+    { url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800', cat: 'pool', alt: 'Mövenpick Spa' },
+    { url: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800', cat: 'restaurant', alt: 'Sofitel Restorani' },
+    { url: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', cat: 'exterior', alt: 'Pullman Toshkent' },
+    { url: 'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800', cat: 'exterior', alt: 'MGallery Buxoro' },
+    { url: 'https://images.unsplash.com/photo-1455587734955-081b22074882?w=800', cat: 'lobby', alt: 'Grand Mercure Lobby' },
+    { url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800', cat: 'pool', alt: 'Novotel Infinity Hovuz' },
+    { url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', cat: 'exterior', alt: 'Mövenpick Samarqand' },
+    { url: 'https://images.unsplash.com/photo-1618245318763-453825cd2d81?w=800', cat: 'lobby', alt: 'MGallery Boutique Lobby' },
+    { url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800', cat: 'exterior', alt: 'Mercure Toshkent' },
+    { url: 'https://images.unsplash.com/photo-1524824267900-2b50a8a46e9c?w=800', cat: 'restaurant', alt: 'Pullman Restoran' },
+    { url: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800', cat: 'room', alt: 'ibis Xona' },
   ];
 
   let currentIdx = 0;
