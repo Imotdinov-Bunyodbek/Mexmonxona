@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="O'zbekistondagi barcha mehmonxonalarni qidiring va filterlang.">
+  <title>Mehmonxonalar - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<div id="navbarContainer"></div>
+
+<div style="height:70px"></div>
+
+<!-- Page Header -->
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:3rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">🏨 Mehmonxonalar</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2.25rem;color:white;margin-top:0.75rem">Barcha Mehmonxonalar</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-top:0.5rem">O'zbekistonning eng yaxshi mehmonxonalari</p>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>📍 Shahar</label>
+        <select class="form-control" id="filterCity" onchange="applyFilters()">
+          <option value="">Barcha shaharlar</option>
+          <option value="Toshkent">Toshkent</option>
+          <option value="Samarqand">Samarqand</option>
+          <option value="Buxoro">Buxoro</option>
+          <option value="Navoiy">Navoiy</option>
+          <option value="Xiva">Xiva</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>⭐ Yulduzlar</label>
+        <select class="form-control" id="filterStars" onchange="applyFilters()">
+          <option value="">Barchasi</option>
+          <option value="5">5 yulduz</option>
+          <option value="4">4 yulduz</option>
+          <option value="3">3 yulduz</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>💰 Min narx (so'm)</label>
+        <input type="number" class="form-control" id="filterMinPrice" placeholder="0" oninput="applyFilters()">
+      </div>
+      <div class="filter-group">
+        <label>💰 Max narx (so'm)</label>
+        <input type="number" class="form-control" id="filterMaxPrice" placeholder="2000000" oninput="applyFilters()">
+      </div>
+      <div class="filter-group" style="min-width:200px">
+        <label>🔤 Nomi bo'yicha</label>
+        <input type="text" class="form-control" id="filterName" placeholder="Mehmonxona nomi..." oninput="applyFilters()">
+      </div>
+      <div class="filter-group" style="min-width:150px">
+        <label>🔃 Saralash</label>
+        <select class="form-control" id="filterSort" onchange="applyFilters()">
+          <option value="default">Default</option>
+          <option value="price-asc">Narx: Arzonidan</option>
+          <option value="price-desc">Narx: Qimmatidan</option>
+          <option value="rating">Reyting</option>
+          <option value="stars">Yulduzlar</option>
+        </select>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="resetFilters()">✕ Tozalash</button>
+    </div>
+
+    <!-- Results count -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <p id="resultsCount" style="color:var(--text-secondary);font-size:0.9rem"></p>
+    </div>
+
+    <!-- Hotels Grid -->
+    <div class="hotels-grid" id="hotelsGrid"></div>
+    <div id="noResults" class="hidden" style="text-align:center;padding:4rem 2rem;color:var(--text-secondary)">
+      <div style="font-size:4rem;margin-bottom:1rem">🔍</div>
+      <h3 style="font-size:1.25rem;margin-bottom:0.5rem">Mehmonxona topilmadi</h3>
+      <p>Filtr sozlamalarini o'zgartirib qayta urinib ko'ring</p>
+      <button class="btn btn-primary" onclick="resetFilters()" style="margin-top:1rem">Filterni tozalash</button>
+    </div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('hotels');
+  document.getElementById('footerContainer').innerHTML = renderFooter(false);
+
+  // URL params
+  const params = new URLSearchParams(location.search);
+  if (params.get('city')) document.getElementById('filterCity').value = params.get('city');
+  if (params.get('stars')) document.getElementById('filterStars').value = params.get('stars');
+
+  function applyFilters() {
+    const city = document.getElementById('filterCity').value;
+    const stars = parseInt(document.getElementById('filterStars').value) || 0;
+    const minPrice = parseInt(document.getElementById('filterMinPrice').value) || 0;
+    const maxPrice = parseInt(document.getElementById('filterMaxPrice').value) || Infinity;
+    const name = document.getElementById('filterName').value.toLowerCase();
+    const sort = document.getElementById('filterSort').value;
+
+    let hotels = DB.getHotels().filter(h => {
+      const minRoom = Math.min(...h.rooms.map(r => r.price));
+      return (
+        (!city || h.city === city) &&
+        (!stars || h.stars === stars) &&
+        minRoom >= minPrice &&
+        minRoom <= maxPrice &&
+        (!name || h.name.toLowerCase().includes(name))
+      );
+    });
+
+    if (sort === 'price-asc') hotels.sort((a,b) => Math.min(...a.rooms.map(r=>r.price)) - Math.min(...b.rooms.map(r=>r.price)));
+    else if (sort === 'price-desc') hotels.sort((a,b) => Math.min(...b.rooms.map(r=>r.price)) - Math.min(...a.rooms.map(r=>r.price)));
+    else if (sort === 'rating') hotels.sort((a,b) => b.rating - a.rating);
+    else if (sort === 'stars') hotels.sort((a,b) => b.stars - a.stars);
+
+    const grid = document.getElementById('hotelsGrid');
+    const noResults = document.getElementById('noResults');
+    document.getElementById('resultsCount').textContent = `${hotels.length} ta mehmonxona topildi`;
+
+    if (hotels.length === 0) {
+      grid.innerHTML = '';
+      noResults.classList.remove('hidden');
+    } else {
+      noResults.classList.add('hidden');
+      grid.innerHTML = hotels.map(renderHotelCard).join('');
+    }
+  }
+
+  function resetFilters() {
+    document.getElementById('filterCity').value = '';
+    document.getElementById('filterStars').value = '';
+    document.getElementById('filterMinPrice').value = '';
+    document.getElementById('filterMaxPrice').value = '';
+    document.getElementById('filterName').value = '';
+    document.getElementById('filterSort').value = 'default';
+    applyFilters();
+  }
+
+  applyFilters();
+</script>
+</body>
+</html>

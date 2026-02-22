@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="O'zbekistondagi eng yaxshi mehmonxonalarni bron qiling. Hilton, Hyatt, Radisson va boshqa premium mehmonxonalar.">
+  <title>MexmonXona - O'zbekiston Mehmonxona Bron Qilish Platformasi</title>
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbarContainer"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🏆 O'zbekistonning #1 Bron Platformasi</div>
+    <h1 class="hero-title">
+      Orzu qilgan <span class="highlight">Mehmonxonangizni</span><br>Oson Toping va Bron Qiling
+    </h1>
+    <p class="hero-subtitle">
+      Hilton, Hyatt, Radisson va 500+ dan ortiq mehmonxonalar. Eng yaxshi narxlar, tezkor bron, kafolatlangan xizmat.
+    </p>
+    <div class="hero-actions">
+      <a href="./pages/hotels.html" class="btn btn-primary btn-lg">🔍 Mehmonxona Qidiring</a>
+      <a href="./pages/tours.html" class="btn btn-ghost btn-lg">✈️ Tur Paketlar</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="number">500+</span><span class="label">Mehmonxona</span></div>
+      <div class="hero-stat"><span class="number">50K+</span><span class="label">Mamnun Mehmon</span></div>
+      <div class="hero-stat"><span class="number">100+</span><span class="label">Shahar</span></div>
+      <div class="hero-stat"><span class="number">24/7</span><span class="label">Qo'llab-quvvatlash</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK SEARCH -->
+<section class="search-section">
+  <div class="search-box">
+    <h3>🔍 Mehmonxona Qidirish</h3>
+    <div class="search-grid">
+      <div class="form-group">
+        <label>📍 Shahar</label>
+        <select class="form-control" id="searchCity">
+          <option value="">Barcha shaharlar</option>
+          <option value="Toshkent">Toshkent</option>
+          <option value="Samarqand">Samarqand</option>
+          <option value="Buxoro">Buxoro</option>
+          <option value="Navoiy">Navoiy</option>
+          <option value="Xiva">Xiva</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>📅 Kirib kelish</label>
+        <input type="date" class="form-control" id="searchCheckin">
+      </div>
+      <div class="form-group">
+        <label>📅 Chiqib ketish</label>
+        <input type="date" class="form-control" id="searchCheckout">
+      </div>
+      <div class="form-group">
+        <label>⭐ Yulduzlar</label>
+        <select class="form-control" id="searchStars">
+          <option value="">Barchasi</option>
+          <option value="5">5 yulduz</option>
+          <option value="4">4 yulduz</option>
+          <option value="3">3 yulduz</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="doSearch()" style="height:46px;width:100%">🔍 Qidirish</button>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED HOTELS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">⭐ Premium Mehmonxonalar</div>
+      <h2 class="section-title">Tanlangan Mehmonxonalar</h2>
+      <p class="section-subtitle">O'zbekistonning eng nufuzli va yuqori darajali mehmonxonalari</p>
+    </div>
+    <div class="hotels-grid" id="featuredHotels"></div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="./pages/hotels.html" class="btn btn-primary btn-lg">Barcha Mehmonxonalarni Ko'rish →</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">💎 Afzalliklarimiz</div>
+      <h2 class="section-title">Nega Bizni Tanlashadi?</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem">
+      <div style="background:var(--bg-light);border-radius:var(--radius-lg);padding:2rem;text-align:center;border:1px solid var(--border);transition:var(--transition)" class="fade-in">
+        <div style="font-size:3rem;margin-bottom:1rem">💰</div>
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Eng Yaxshi Narxlar</h3>
+        <p style="color:var(--text-secondary);font-size:0.875rem">Narx kafolati - boshqa joyda arzonroq topsangiz, qaytarib beramiz</p>
+      </div>
+      <div style="background:var(--bg-light);border-radius:var(--radius-lg);padding:2rem;text-align:center;border:1px solid var(--border)" class="fade-in delay-1">
+        <div style="font-size:3rem;margin-bottom:1rem">⚡</div>
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Tezkor Bron</h3>
+        <p style="color:var(--text-secondary);font-size:0.875rem">30 sekundda bron qiling, darhol tasdiqnoma oling</p>
+      </div>
+      <div style="background:var(--bg-light);border-radius:var(--radius-lg);padding:2rem;text-align:center;border:1px solid var(--border)" class="fade-in delay-2">
+        <div style="font-size:3rem;margin-bottom:1rem">🛡️</div>
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Kafolatlangan Xizmat</h3>
+        <p style="color:var(--text-secondary);font-size:0.875rem">Har bir bron kafolatlangan, to'lov himoyalangan</p>
+      </div>
+      <div style="background:var(--bg-light);border-radius:var(--radius-lg);padding:2rem;text-align:center;border:1px solid var(--border)" class="fade-in delay-3">
+        <div style="font-size:3rem;margin-bottom:1rem">📞</div>
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">24/7 Yordam</h3>
+        <p style="color:var(--text-secondary);font-size:0.875rem">Kechayu kunduz xizmatda, istalgan savolga javob</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOURS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">✈️ Sayohat</div>
+      <h2 class="section-title">Mashhur Tur Paketlar</h2>
+      <p class="section-subtitle">Mehmonxona va transport birgalikda - hammasi bir joyda</p>
+    </div>
+    <div class="tours-grid" id="featuredTours"></div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="./pages/tours.html" class="btn btn-primary btn-lg">Barcha Turlarni Ko'rish →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">💬 Mijozlar</div>
+      <h2 class="section-title">Mijozlarimiz Fikri</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.75rem">
+      <div style="background:white;border-radius:var(--radius-lg);padding:1.75rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="color:var(--gold);font-size:1.1rem;margin-bottom:0.875rem">⭐⭐⭐⭐⭐</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;font-style:italic">"MexmonXona orqali Hilton Tashkentni bron qildim. Xizmat ajoyib, narx qulayligini topib, pushaymon bo'lmadim!"</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem">👤</div>
+          <div><div style="font-weight:700;font-size:0.9rem">Dilnoza Yusupova</div><div style="font-size:0.78rem;color:var(--text-secondary)">Toshkent</div></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:var(--radius-lg);padding:1.75rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="color:var(--gold);font-size:1.1rem;margin-bottom:0.875rem">⭐⭐⭐⭐⭐</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;font-style:italic">"Samarqand - Buxoro tur paketini olib qildim. Hamma narsasi mukammal - mehmonxona, transport, gid."</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem">👤</div>
+          <div><div style="font-weight:700;font-size:0.9rem">Jamshid Toshmatov</div><div style="font-size:0.78rem;color:var(--text-secondary)">Andijon</div></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:var(--radius-lg);padding:1.75rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="color:var(--gold);font-size:1.1rem;margin-bottom:0.875rem">⭐⭐⭐⭐⭐</div>
+        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;font-style:italic">"Admin paneli juda qulay. Mehmonxonamiz bronlarini ko'rish va boshqarish juda oson bo'lib qoldi!"</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-size:1.1rem">👤</div>
+          <div><div style="font-weight:700;font-size:0.9rem">Sardor Raximov</div><div style="font-size:0.78rem;color:var(--text-secondary)">Samarqand</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge">📝 Blog</div>
+      <h2 class="section-title">Sayohat Tavsiyalari</h2>
+      <p class="section-subtitle">Safaringizni rejalashtirish uchun foydali maqolalar</p>
+    </div>
+    <div class="blog-grid" id="featuredBlog"></div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="./pages/blog.html" class="btn btn-primary btn-lg">Barcha Maqolalarni Ko'rish →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:5rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent);margin-bottom:1.25rem">🎁 Maxsus Taklif</div>
+  <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.75rem);color:white;margin-bottom:1rem">Birinchi Broningizga <span style="color:var(--accent)">20% Chegirma!</span></h2>
+  <p style="color:rgba(255,255,255,0.7);max-width:500px;margin:0 auto 2rem">Hoziroq ro'yxatdan o'ting va birinchi broningizga maxsus chegirma oling. Taklif cheklangan!</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+    <a href="./pages/login.html?mode=register" class="btn btn-primary btn-lg">Ro'yxatdan O'tish</a>
+    <a href="./pages/hotels.html" class="btn btn-ghost btn-lg">Mehmonxonalarni Ko'rish</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div id="footerContainer"></div>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()" title="Tepaga">↑</button>
+
+<script src="./js/data.js"></script>
+<script src="./js/app.js"></script>
+<script>
+  // Navbar va Footer
+  document.getElementById('navbarContainer').innerHTML = renderIndexNavbar('home');
+  document.getElementById('footerContainer').innerHTML = renderFooter(true);
+
+  // Today date init
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('searchCheckin').value = today;
+  document.getElementById('searchCheckout').value = tomorrow;
+  document.getElementById('searchCheckin').min = today;
+  document.getElementById('searchCheckout').min = tomorrow;
+
+  // Featured Hotels (first 6)
+  const hotels = DB.getHotels().slice(0, 6);
+  document.getElementById('featuredHotels').innerHTML = hotels.map(renderHotelCard).join('');
+
+  // Featured Tours
+  const tours = DB.getTours().slice(0, 4);
+  document.getElementById('featuredTours').innerHTML = tours.map(renderTourCard).join('');
+
+  // Featured Blog
+  const posts = DB.getBlogPosts().slice(0, 3);
+  document.getElementById('featuredBlog').innerHTML = posts.map(renderBlogCard).join('');
+
+  // Search function
+  function doSearch() {
+    const city = document.getElementById('searchCity').value;
+    const stars = document.getElementById('searchStars').value;
+    const checkin = document.getElementById('searchCheckin').value;
+    const checkout = document.getElementById('searchCheckout').value;
+    const params = new URLSearchParams({ city, stars, checkin, checkout });
+    window.location.href = './pages/hotels.html?' + params.toString();
+  }
+</script>
+</body>
+</html>

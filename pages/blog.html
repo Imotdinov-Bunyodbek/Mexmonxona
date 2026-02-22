@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<div id="navbarContainer"></div>
+<div style="height:70px"></div>
+
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:4rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">📝 Blog</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2.5rem;color:white;margin-top:0.75rem">Sayohat Tavsiyalari</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem;max-width:500px;margin-left:auto;margin-right:auto">Safaringizni rejalashtirish uchun foydali maqolalar, maslahatlar va ko'rsatmalar</p>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;align-items:center;justify-content:space-between">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="filterBlog('')" id="cat-all">Barchasi</button>
+        <button class="btn btn-outline btn-sm" onclick="filterBlog('Sayohat')" id="cat-sayohat">Sayohat</button>
+        <button class="btn btn-outline btn-sm" onclick="filterBlog('Maslahat')" id="cat-maslahat">Maslahat</button>
+        <button class="btn btn-outline btn-sm" onclick="filterBlog('Shahar')" id="cat-shahar">Shaharlar</button>
+      </div>
+      <input type="text" class="form-control" placeholder="🔍 Maqola qidirish..." style="max-width:250px" oninput="searchBlog(this.value)">
+    </div>
+    <div class="blog-grid" id="blogGrid"></div>
+    <div id="noBlog" class="hidden" style="text-align:center;padding:3rem;color:var(--text-secondary)">
+      <div style="font-size:3rem">📭</div>
+      <p>Maqola topilmadi</p>
+    </div>
+
+    <!-- Add Article Form (for demo) -->
+    <div style="margin-top:4rem;background:white;border-radius:var(--radius-xl);padding:2.5rem;box-shadow:var(--shadow-lg)">
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.75rem;margin-bottom:0.5rem">📨 Maqola Yuboring</h2>
+      <p style="color:var(--text-secondary);margin-bottom:2rem">Sayohat tajribangizni boshqalar bilan ulashing</p>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Ism</label><input class="form-control" id="articleName" placeholder="Ismingiz"></div>
+        <div class="form-group"><label class="form-label">Kategoriya</label>
+          <select class="form-control" id="articleCategory">
+            <option>Sayohat</option><option>Maslahat</option><option>Shahar</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Sarlavha</label><input class="form-control" id="articleTitle" placeholder="Maqola sarlavhasi"></div>
+      <div class="form-group"><label class="form-label">Matn</label><textarea class="form-control" id="articleContent" rows="5" placeholder="Maqola matni..."></textarea></div>
+      <button class="btn btn-primary" onclick="submitArticle()">Yuborish →</button>
+    </div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('blog');
+  document.getElementById('footerContainer').innerHTML = renderFooter();
+
+  let allPosts = DB.getBlogPosts();
+
+  function filterBlog(cat) {
+    const posts = cat ? allPosts.filter(p => p.category === cat) : allPosts;
+    renderBlog(posts);
+  }
+
+  function searchBlog(q) {
+    const posts = allPosts.filter(p =>
+      p.title.toLowerCase().includes(q.toLowerCase()) ||
+      p.excerpt.toLowerCase().includes(q.toLowerCase())
+    );
+    renderBlog(posts);
+  }
+
+  function renderBlog(posts) {
+    const grid = document.getElementById('blogGrid');
+    const noBlog = document.getElementById('noBlog');
+    if (posts.length === 0) { grid.innerHTML = ''; noBlog.classList.remove('hidden'); }
+    else { noBlog.classList.add('hidden'); grid.innerHTML = posts.map(renderBlogCard).join(''); }
+  }
+
+  function submitArticle() {
+    const name = document.getElementById('articleName').value.trim();
+    const title = document.getElementById('articleTitle').value.trim();
+    const content = document.getElementById('articleContent').value.trim();
+    const cat = document.getElementById('articleCategory').value;
+    if (!name || !title || !content) { showToast('Barcha maydonlarni to\'ldiring', 'warning'); return; }
+    const posts = DB.getBlogPosts();
+    const newPost = {
+      id: Date.now(), title, category: cat,
+      date: new Date().toISOString().split('T')[0],
+      author: name,
+      image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600',
+      excerpt: content.substring(0, 120) + '...',
+      content
+    };
+    posts.push(newPost);
+    localStorage.setItem('blogPosts', JSON.stringify(posts));
+    allPosts = posts;
+    filterBlog('');
+    showToast('Maqolangiz yuborildi! Ko\'rib chiqilgach chop etiladi.', 'success');
+    document.getElementById('articleName').value = '';
+    document.getElementById('articleTitle').value = '';
+    document.getElementById('articleContent').value = '';
+  }
+
+  filterBlog('');
+</script>
+</body>
+</html>

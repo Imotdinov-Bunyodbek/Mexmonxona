@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galereya - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
+    .lightbox img { max-width: 90vw; max-height: 85vh; border-radius: var(--radius-md); object-fit: contain; }
+    .lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.1); border: none; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; transition: var(--transition); }
+    .lightbox-close:hover { background: var(--danger); }
+    .lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; transition: var(--transition); }
+    .lightbox-prev:hover, .lightbox-next:hover { background:rgba(232,184,109,0.3); }
+    .lightbox-prev { left: 1.5rem; }
+    .lightbox-next { right: 1.5rem; }
+  </style>
+</head>
+<body>
+<div id="navbarContainer"></div>
+<div style="height:70px"></div>
+
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:4rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">🖼️ Galereya</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2.5rem;color:white;margin-top:0.75rem">Mehmonxona Galereyasi</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem">O'zbekistondagi eng go'zal mehmonxonalar</p>
+</section>
+
+<!-- Category Filter -->
+<section style="background:white;border-bottom:1px solid var(--border);padding:1.25rem 2rem">
+  <div class="container" style="display:flex;gap:0.625rem;flex-wrap:wrap;justify-content:center">
+    <button class="btn btn-primary btn-sm" onclick="filterGallery('all')">Barchasi</button>
+    <button class="btn btn-outline btn-sm" onclick="filterGallery('lobby')">Lobby</button>
+    <button class="btn btn-outline btn-sm" onclick="filterGallery('room')">Xonalar</button>
+    <button class="btn btn-outline btn-sm" onclick="filterGallery('pool')">Hovuz & Spa</button>
+    <button class="btn btn-outline btn-sm" onclick="filterGallery('restaurant')">Restoran</button>
+    <button class="btn btn-outline btn-sm" onclick="filterGallery('exterior')">Bino Tashqi</button>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+<div id="lightboxContainer"></div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('gallery');
+  document.getElementById('footerContainer').innerHTML = renderFooter();
+
+  const galleryImages = [
+    { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800', cat: 'lobby', alt: 'Hilton Lobby' },
+    { url: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800', cat: 'room', alt: 'Delyuks xona' },
+    { url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800', cat: 'room', alt: 'Suite xona' },
+    { url: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800', cat: 'room', alt: 'Prezident suite' },
+    { url: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', cat: 'pool', alt: 'Hovuz' },
+    { url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800', cat: 'pool', alt: 'Spa' },
+    { url: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800', cat: 'restaurant', alt: 'Restoran' },
+    { url: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', cat: 'exterior', alt: 'Hotel exterior' },
+    { url: 'https://images.unsplash.com/photo-1596436889106-be35e843f974?w=800', cat: 'exterior', alt: 'Hyatt exterior' },
+    { url: 'https://images.unsplash.com/photo-1455587734955-081b22074882?w=800', cat: 'lobby', alt: 'InterContinental Lobby' },
+    { url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800', cat: 'pool', alt: 'Infinity pool' },
+    { url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', cat: 'exterior', alt: 'Mountain view hotel' },
+    { url: 'https://images.unsplash.com/photo-1618245318763-453825cd2d81?w=800', cat: 'lobby', alt: 'Boutique hotel' },
+    { url: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800', cat: 'exterior', alt: 'City hotel' },
+    { url: 'https://images.unsplash.com/photo-1524824267900-2b50a8a46e9c?w=800', cat: 'restaurant', alt: 'Fine dining' },
+    { url: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800', cat: 'room', alt: 'Desert view room' },
+  ];
+
+  let currentIdx = 0;
+  let filteredImages = [...galleryImages];
+
+  function filterGallery(cat) {
+    filteredImages = cat === 'all' ? galleryImages : galleryImages.filter(i => i.cat === cat);
+    renderGallery();
+  }
+
+  function renderGallery() {
+    document.getElementById('galleryGrid').innerHTML = filteredImages.map((img, idx) => `
+      <div class="gallery-item" onclick="openLightbox(${idx})">
+        <img src="${img.url}" alt="${img.alt}" loading="lazy">
+        <div class="gallery-overlay">🔍</div>
+      </div>
+    `).join('');
+  }
+
+  function openLightbox(idx) {
+    currentIdx = idx;
+    renderLightbox();
+  }
+
+  function renderLightbox() {
+    document.getElementById('lightboxContainer').innerHTML = `
+      <div class="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightboxDirect()">✕</button>
+        <button class="lightbox-prev" onclick="event.stopPropagation();changeLightbox(-1)">‹</button>
+        <img src="${filteredImages[currentIdx].url}" alt="${filteredImages[currentIdx].alt}" onclick="event.stopPropagation()">
+        <button class="lightbox-next" onclick="event.stopPropagation();changeLightbox(1)">›</button>
+      </div>
+    `;
+  }
+
+  function changeLightbox(dir) {
+    currentIdx = (currentIdx + dir + filteredImages.length) % filteredImages.length;
+    renderLightbox();
+  }
+
+  function closeLightbox(e) {
+    if (e.target.classList.contains('lightbox')) document.getElementById('lightboxContainer').innerHTML = '';
+  }
+
+  function closeLightboxDirect() {
+    document.getElementById('lightboxContainer').innerHTML = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') changeLightbox(-1);
+    else if (e.key === 'ArrowRight') changeLightbox(1);
+    else if (e.key === 'Escape') closeLightboxDirect();
+  });
+
+  filterGallery('all');
+</script>
+</body>
+</html>

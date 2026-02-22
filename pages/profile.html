@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profilim - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<div id="navbarContainer"></div>
+<div style="height:70px"></div>
+
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:3rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">👤 Profil</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2rem;color:white;margin-top:0.75rem" id="profileTitle">Mening Profilim</h1>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:800px">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:2rem;align-items:start">
+      <!-- Avatar Card -->
+      <div style="background:white;border-radius:var(--radius-xl);padding:2rem;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
+        <div style="width:90px;height:90px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1rem">👤</div>
+        <div style="font-weight:800;font-size:1.1rem;margin-bottom:0.25rem" id="avatarName">-</div>
+        <div style="font-size:0.825rem;color:var(--text-secondary)" id="avatarEmail">-</div>
+        <div style="margin-top:0.75rem" id="avatarBadge"></div>
+        <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.85rem">
+            <span style="color:var(--text-secondary)">Bronlar</span>
+            <strong id="myBookingsCount">0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem">
+            <span style="color:var(--text-secondary)">Jami xarajat</span>
+            <strong id="myTotalSpent" style="color:var(--accent-dark)">0</strong>
+          </div>
+        </div>
+        <a href="my-bookings.html" class="btn btn-primary w-full" style="margin-top:1.25rem">Bronlarimni Ko'rish</a>
+      </div>
+
+      <!-- Edit Form -->
+      <div style="background:white;border-radius:var(--radius-xl);padding:2rem;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem">📝 Ma'lumotlarni Tahrirlash</h3>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Ism</label>
+            <input class="form-control" id="editName" placeholder="To'liq ism">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="editEmail" type="email" disabled style="opacity:0.7">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefon</label>
+          <input class="form-control" id="editPhone" placeholder="+998 90 000-0000">
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">💾 Saqlash</button>
+
+        <div class="divider"></div>
+
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1.25rem">🔒 Parolni O'zgartirish</h3>
+        <div class="form-group"><label class="form-label">Joriy parol</label><input class="form-control" id="currentPass" type="password" placeholder="Joriy parolingiz"></div>
+        <div class="form-group"><label class="form-label">Yangi parol</label><input class="form-control" id="newPass" type="password" placeholder="Yangi parol (min. 6 belgi)"></div>
+        <div class="form-group"><label class="form-label">Tasdiqlash</label><input class="form-control" id="confirmPass" type="password" placeholder="Yangi parolni tasdiqlang"></div>
+        <button class="btn btn-outline" onclick="changePassword()">Parolni O'zgartirish</button>
+
+        <div class="divider"></div>
+        <button class="btn btn-sm" onclick="handleLogoutProfile()" style="color:var(--danger);border:1px solid var(--danger);background:rgba(239,68,68,0.05)">🚪 Tizimdan Chiqish</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  const user = DB.getCurrentUser();
+  if (!user) window.location.href = 'login.html';
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('');
+  document.getElementById('footerContainer').innerHTML = renderFooter();
+
+  // Init
+  document.getElementById('profileTitle').textContent = user.name + ' - Profil';
+  document.getElementById('avatarName').textContent = user.name;
+  document.getElementById('avatarEmail').textContent = user.email;
+  document.getElementById('avatarBadge').innerHTML = `<span class="badge ${user.role==='admin'?'badge-warning':'badge-info'}">${user.role === 'admin' ? '⚙️ Admin' : '👤 Foydalanuvchi'}</span>`;
+  document.getElementById('editName').value = user.name;
+  document.getElementById('editEmail').value = user.email;
+  document.getElementById('editPhone').value = user.phone || '';
+
+  const myBookings = DB.getBookings().filter(b => b.guestEmail === user.email);
+  document.getElementById('myBookingsCount').textContent = myBookings.length;
+  document.getElementById('myTotalSpent').textContent = DB.formatPrice(myBookings.reduce((s,b) => s + b.totalPrice, 0));
+
+  function saveProfile() {
+    const name = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    if (!name) { showToast('Ismni kiriting', 'warning'); return; }
+    const users = DB.getUsers().map(u => u.id === user.id ? {...u, name, phone} : u);
+    DB.saveUsers(users);
+    showToast('Profil yangilandi!', 'success');
+    document.getElementById('avatarName').textContent = name;
+  }
+
+  function changePassword() {
+    const current = document.getElementById('currentPass').value;
+    const newP = document.getElementById('newPass').value;
+    const confirm = document.getElementById('confirmPass').value;
+    if (current !== user.password) { showToast('Joriy parol noto\'g\'ri', 'error'); return; }
+    if (newP.length < 6) { showToast('Yangi parol kamida 6 belgi', 'warning'); return; }
+    if (newP !== confirm) { showToast('Parollar mos kelmadi', 'error'); return; }
+    const users = DB.getUsers().map(u => u.id === user.id ? {...u, password: newP} : u);
+    DB.saveUsers(users);
+    showToast('Parol muvaffaqiyatli o\'zgartirildi!', 'success');
+    document.getElementById('currentPass').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('confirmPass').value = '';
+  }
+
+  function handleLogoutProfile() {
+    DB.logout();
+    showToast('Tizimdan chiqdingiz', 'info');
+    setTimeout(() => window.location.href = '../index.html', 800);
+  }
+</script>
+</body>
+</html>

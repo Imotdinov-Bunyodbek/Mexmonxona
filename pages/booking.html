@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mehmonxona xonasini onlayn bron qiling.">
+  <title>Bron Qilish - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .room-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .room-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+    .room-card.selected { border-color: var(--accent); background: rgba(232,184,109,0.05); }
+    .room-card-inner { display: grid; grid-template-columns: 200px 1fr auto; gap: 0; align-items: stretch; }
+    .room-card-img { height: 140px; object-fit: cover; width: 100%; }
+    .room-card-info { padding: 1rem 1.25rem; }
+    .room-card-action { padding: 1rem 1.25rem; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.75rem; border-left: 1px solid var(--border); min-width: 140px; }
+    .room-features { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+    .room-feature { font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+    .summary-card { background: var(--primary); color: white; border-radius: var(--radius-xl); padding: 2rem; position: sticky; top: 90px; }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.625rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-total { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+    @media(max-width:768px) { .room-card-inner { grid-template-columns: 1fr; } .booking-layout { flex-direction: column; } }
+  </style>
+</head>
+<body>
+<div id="navbarContainer"></div>
+<div style="height:70px"></div>
+
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:3rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">📅 Bron Qilish</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2.25rem;color:white;margin-top:0.75rem" id="pageTitle">Xona Bron Qilish</h1>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- Steps -->
+    <div class="step-indicator" style="max-width:600px;margin:0 auto 2.5rem">
+      <div class="step active" id="step1">
+        <div class="step-circle">1</div>
+        <span class="step-label">Xona tanlash</span>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">2</div>
+        <span class="step-label">Ma'lumotlar</span>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">3</div>
+        <span class="step-label">To'lov</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:2rem;align-items:flex-start" class="booking-layout">
+      <!-- Left: Main content -->
+      <div style="flex:1">
+        <!-- Step 1: Date & Room -->
+        <div id="stepContent1">
+          <div class="booking-card" style="margin-bottom:1.5rem">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem">📅 Sana va Mehmonlar</h3>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Kirib kelish</label>
+                <input type="date" class="form-control" id="checkin" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Chiqib ketish</label>
+                <input type="date" class="form-control" id="checkout" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kattalar</label>
+                <select class="form-control" id="adults">
+                  <option value="1">1 kishi</option>
+                  <option value="2" selected>2 kishi</option>
+                  <option value="3">3 kishi</option>
+                  <option value="4">4 kishi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bolalar</label>
+                <select class="form-control" id="children">
+                  <option value="0" selected>0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem">🛏️ Xona Tanlang</h3>
+            <div id="hotelInfo" style="background:var(--bg-light);border-radius:var(--radius-md);padding:1.25rem;margin-bottom:1.25rem;display:none">
+              <div style="display:flex;gap:1rem;align-items:center">
+                <img id="hotelImg" src="" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:var(--radius-sm)">
+                <div>
+                  <h4 id="hotelName" style="font-size:1rem;font-weight:700;margin-bottom:0.25rem"></h4>
+                  <p id="hotelCity" style="font-size:0.825rem;color:var(--text-secondary)"></p>
+                </div>
+              </div>
+            </div>
+            <div id="roomsContainer"></div>
+          </div>
+
+          <div style="text-align:right;margin-top:1.25rem">
+            <button class="btn btn-primary" onclick="goStep2()" id="nextStep1Btn" disabled>Davom etish →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Guest Details -->
+        <div id="stepContent2" class="hidden">
+          <div class="booking-card">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem">👤 Mehmon Ma'lumotlari</h3>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Ism <span class="required">*</span></label>
+                <input type="text" class="form-control" id="guestFirstName" placeholder="Ismingiz" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Familiya <span class="required">*</span></label>
+                <input type="text" class="form-control" id="guestLastName" placeholder="Familiyangiz" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telefon <span class="required">*</span></label>
+                <input type="tel" class="form-control" id="guestPhone" placeholder="+998 90 123-4567" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">E-mail <span class="required">*</span></label>
+                <input type="email" class="form-control" id="guestEmail" placeholder="email@example.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Maxsus talablar (ixtiyoriy)</label>
+              <textarea class="form-control" id="specialRequests" rows="3" placeholder="Qo'shimcha so'rovlar, allergyalar, o'zgacha xohishlar..."></textarea>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1.25rem">
+            <button class="btn btn-outline" onclick="goStep(1)">← Orqaga</button>
+            <button class="btn btn-primary" onclick="goStep3()">Davom etish →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div id="stepContent3" class="hidden">
+          <div class="booking-card">
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:1.25rem">💳 To'lov Usuli</h3>
+            <div class="payment-methods">
+              <div class="payment-method selected" id="pm-cash" onclick="selectPayment('Naqd')">
+                <span class="icon">💵</span>
+                <span class="name">Naqd pul</span>
+              </div>
+              <div class="payment-method" id="pm-card" onclick="selectPayment('Karta')">
+                <span class="icon">💳</span>
+                <span class="name">Bank kartasi</span>
+              </div>
+              <div class="payment-method" id="pm-click" onclick="selectPayment('Click')">
+                <span class="icon">📱</span>
+                <span class="name">Click</span>
+              </div>
+              <div class="payment-method" id="pm-payme" onclick="selectPayment('Payme')">
+                <span class="icon">🔵</span>
+                <span class="name">Payme</span>
+              </div>
+              <div class="payment-method" id="pm-uzum" onclick="selectPayment('Uzum')">
+                <span class="icon">🟢</span>
+                <span class="name">Uzum Bank</span>
+              </div>
+              <div class="payment-method" id="pm-transfer" onclick="selectPayment('O\'tkazma')">
+                <span class="icon">🏦</span>
+                <span class="name">Bank o'tkazmasi</span>
+              </div>
+            </div>
+
+            <div id="cardDetails" style="display:none">
+              <div class="divider"></div>
+              <h4 style="font-size:0.9rem;font-weight:700;margin-bottom:1rem;color:var(--text-secondary)">Karta ma'lumotlari</h4>
+              <div class="form-group">
+                <label class="form-label">Karta raqami</label>
+                <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Amal qilish muddati</label>
+                  <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">CVV</label>
+                  <input type="text" class="form-control" placeholder="123" maxlength="3">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Karta egasining ismi</label>
+                <input type="text" class="form-control" placeholder="ISM FAMILIYA">
+              </div>
+            </div>
+          </div>
+
+          <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-md);padding:1rem;margin-top:1rem;display:flex;align-items:center;gap:0.75rem">
+            <span style="font-size:1.5rem">🔒</span>
+            <p style="font-size:0.825rem;color:var(--text-secondary);margin:0">Ma'lumotlaringiz 256-bit SSL shifrlash orqali himoyalangan. Karta ma'lumotlari saqlanmaydi.</p>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:1.25rem">
+            <button class="btn btn-outline" onclick="goStep(2)">← Orqaga</button>
+            <button class="btn btn-primary btn-lg" onclick="confirmBooking()">✅ Bronni Tasdiqlash</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div id="stepContent4" class="hidden">
+          <div class="booking-card" style="text-align:center;padding:3rem">
+            <div style="font-size:5rem;margin-bottom:1.5rem">🎉</div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:0.75rem;color:var(--success)">Bron Tasdiqlandi!</h2>
+            <p style="color:var(--text-secondary);margin-bottom:1.5rem">Broningiz muvaffaqiyatli yaratildi. Tasdiqlash emailga yuborildi.</p>
+            <div style="background:var(--bg-light);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:2rem;text-align:left">
+              <div id="bookingConfDetails"></div>
+            </div>
+            <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+              <a href="my-bookings.html" class="btn btn-primary">📋 Bronlarimni Ko'rish</a>
+              <a href="../index.html" class="btn btn-outline">🏠 Bosh Sahifa</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Summary -->
+      <div style="width:320px;flex-shrink:0" id="summaryPanel">
+        <div class="summary-card">
+          <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;color:var(--accent)">📋 Bron Xulosasi</h3>
+          <div id="summaryContent">
+            <p style="color:rgba(255,255,255,0.6);font-size:0.875rem;text-align:center;padding:1rem 0">Xona va sana tanlang</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('booking');
+  document.getElementById('footerContainer').innerHTML = renderFooter(false);
+
+  let selectedRoom = null;
+  let selectedHotel = null;
+  let selectedPayment = 'Naqd';
+  let currentStep = 1;
+
+  // URL params
+  const params = new URLSearchParams(location.search);
+  const hotelId = params.get('hotel');
+  const tourId = params.get('tour');
+
+  // Date setup
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('checkin').value = today;
+  document.getElementById('checkout').value = tomorrow;
+  document.getElementById('checkin').min = today;
+  document.getElementById('checkout').min = tomorrow;
+  document.getElementById('checkin').addEventListener('change', () => { updateSummary(); });
+  document.getElementById('checkout').addEventListener('change', () => { updateSummary(); });
+
+  // Pre-fill user
+  const user = DB.getCurrentUser();
+  if (user) {
+    document.getElementById('guestFirstName').value = user.name.split(' ')[0] || '';
+    document.getElementById('guestLastName').value = user.name.split(' ')[1] || '';
+    document.getElementById('guestEmail').value = user.email || '';
+    document.getElementById('guestPhone').value = user.phone || '';
+  }
+
+  // Load hotel if specified
+  if (hotelId) {
+    selectedHotel = DB.getHotels().find(h => h.id == hotelId);
+    if (selectedHotel) {
+      document.getElementById('pageTitle').textContent = selectedHotel.name;
+      const hotelInfo = document.getElementById('hotelInfo');
+      hotelInfo.style.display = 'block';
+      document.getElementById('hotelImg').src = selectedHotel.image;
+      document.getElementById('hotelName').textContent = selectedHotel.name;
+      document.getElementById('hotelCity').textContent = '📍 ' + selectedHotel.city;
+      renderRooms(selectedHotel);
+    }
+  } else {
+    // Show hotel selector
+    const container = document.getElementById('roomsContainer');
+    const hotels = DB.getHotels();
+    container.innerHTML = `
+      <div class="form-group" style="margin-bottom:1.25rem">
+        <label class="form-label">Mehmonxona tanlang</label>
+        <select class="form-control" id="hotelSelect" onchange="onHotelSelect(this.value)">
+          <option value="">-- Mehmonxona tanlang --</option>
+          ${hotels.map(h => `<option value="${h.id}">${h.name} (${h.city}) - ${h.stars}★</option>`).join('')}
+        </select>
+      </div>
+      <div id="roomsAfterSelect"></div>
+    `;
+  }
+
+  function onHotelSelect(id) {
+    if (!id) return;
+    selectedHotel = DB.getHotels().find(h => h.id == id);
+    if (selectedHotel) {
+      document.getElementById('hotelInfo').style.display = 'block';
+      document.getElementById('hotelImg').src = selectedHotel.image;
+      document.getElementById('hotelName').textContent = selectedHotel.name;
+      document.getElementById('hotelCity').textContent = '📍 ' + selectedHotel.city;
+      renderRooms(selectedHotel, 'roomsAfterSelect');
+    }
+  }
+
+  function renderRooms(hotel, containerId = 'roomsContainer') {
+    const container = document.getElementById(containerId) || document.getElementById('roomsContainer');
+    if (containerId === 'roomsAfterSelect') {
+      // Don't replace the selector
+    } else {
+      container.innerHTML = '';
+    }
+    const roomsDiv = document.createElement('div');
+    hotel.rooms.forEach(room => {
+      const card = document.createElement('div');
+      card.className = 'room-card';
+      card.id = `room-${room.id}`;
+      card.innerHTML = `
+        <div class="room-card-inner">
+          <img src="${room.image}" alt="${room.type}" class="room-card-img">
+          <div class="room-card-info">
+            <h4 style="font-weight:700;margin-bottom:0.25rem">${room.type}</h4>
+            <div class="room-features">
+              <span class="room-feature">👥 ${room.capacity} kishi</span>
+              <span class="room-feature" style="color:${room.available?'var(--success)':'var(--danger)'}">${room.available?'✅ Bo\'sh':'❌ Band'}</span>
+            </div>
+          </div>
+          <div class="room-card-action">
+            <div style="text-align:center">
+              <div style="font-size:1.2rem;font-weight:800;color:var(--accent-dark)">${DB.formatPrice(room.price)}</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary)">/kecha</div>
+            </div>
+            ${room.available ? `<button class="btn btn-primary btn-sm" onclick="selectRoom(${room.id})" id="select-btn-${room.id}">Tanlash</button>` : `<button class="btn btn-sm" disabled style="opacity:0.5;cursor:not-allowed">Band</button>`}
+          </div>
+        </div>
+      `;
+      roomsDiv.appendChild(card);
+    });
+    if (containerId === 'roomsAfterSelect') {
+      container.appendChild(roomsDiv);
+    } else {
+      container.appendChild(roomsDiv);
+    }
+  }
+
+  function selectRoom(roomId) {
+    if (!selectedHotel) return;
+    selectedRoom = selectedHotel.rooms.find(r => r.id === roomId);
+    // UI update
+    document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`room-${roomId}`)?.classList.add('selected');
+    document.querySelectorAll('[id^="select-btn-"]').forEach(b => b.textContent = 'Tanlash');
+    document.getElementById(`select-btn-${roomId}`).textContent = '✅ Tanlandi';
+    document.getElementById('nextStep1Btn').disabled = false;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    if (!selectedRoom || !checkin || !checkout) return;
+    const nights = daysDiff(checkin, checkout);
+    const total = selectedRoom.price * nights;
+    document.getElementById('summaryContent').innerHTML = `
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Mehmonxona</span><span style="font-weight:600;font-size:0.85rem">${selectedHotel?.name}</span></div>
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Xona</span><span>${selectedRoom.type}</span></div>
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Kirish</span><span>${formatDate(checkin)}</span></div>
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Chiqish</span><span>${formatDate(checkout)}</span></div>
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Tunlar</span><span>${nights} tun</span></div>
+      <div class="summary-row"><span style="color:rgba(255,255,255,0.7)">Narx/tun</span><span>${DB.formatPrice(selectedRoom.price)}</span></div>
+      <div class="summary-row" style="margin-top:0.5rem;padding-top:0.5rem;border-top:2px solid rgba(232,184,109,0.3)">
+        <span style="font-weight:700">Jami</span>
+        <span class="summary-total">${DB.formatPrice(total)}</span>
+      </div>
+      <p style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.75rem">* Soliq va xizmat to'lovlari kiritilgan</p>
+    `;
+  }
+
+  function goStep2() {
+    if (!selectedRoom) { showToast('Iltimos, xona tanlang', 'warning'); return; }
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    if (!checkin || !checkout || checkin >= checkout) { showToast('Sanalarni to\'g\'ri kiriting', 'warning'); return; }
+    goStep(2);
+  }
+
+  function goStep3() {
+    const fn = document.getElementById('guestFirstName').value.trim();
+    const ln = document.getElementById('guestLastName').value.trim();
+    const ph = document.getElementById('guestPhone').value.trim();
+    const em = document.getElementById('guestEmail').value.trim();
+    if (!fn || !ln || !ph || !em) { showToast('Barcha majburiy maydonlarni to\'ldiring', 'warning'); return; }
+    if (!em.includes('@')) { showToast('Email manzil noto\'g\'ri', 'error'); return; }
+    goStep(3);
+  }
+
+  function goStep(n) {
+    currentStep = n;
+    [1,2,3,4].forEach(i => {
+      document.getElementById(`stepContent${i}`)?.classList.add('hidden');
+      const stepEl = document.getElementById(`step${i}`);
+      if (stepEl) {
+        stepEl.classList.remove('active', 'done');
+        if (i < n) stepEl.classList.add('done'), stepEl.querySelector('.step-circle').textContent = '✓';
+        else if (i === n) stepEl.classList.add('active'), stepEl.querySelector('.step-circle').textContent = i;
+        else stepEl.querySelector('.step-circle').textContent = i;
+      }
+    });
+    document.getElementById(`stepContent${n}`)?.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function selectPayment(method) {
+    selectedPayment = method;
+    document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+    const map = { 'Naqd':'cash', 'Karta':'card', 'Click':'click', 'Payme':'payme', 'Uzum':'uzum', 'O\'tkazma':'transfer' };
+    document.getElementById(`pm-${map[method]}`)?.classList.add('selected');
+    document.getElementById('cardDetails').style.display = method === 'Karta' ? 'block' : 'none';
+  }
+
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function confirmBooking() {
+    const checkin = document.getElementById('checkin').value;
+    const checkout = document.getElementById('checkout').value;
+    const nights = daysDiff(checkin, checkout);
+    const total = selectedRoom.price * nights;
+    const guestName = `${document.getElementById('guestFirstName').value} ${document.getElementById('guestLastName').value}`;
+
+    const booking = DB.addBooking({
+      hotelId: selectedHotel.id,
+      hotelName: selectedHotel.name,
+      roomId: selectedRoom.id,
+      roomType: selectedRoom.type,
+      checkin, checkout, nights,
+      totalPrice: total,
+      guestName,
+      guestPhone: document.getElementById('guestPhone').value,
+      guestEmail: document.getElementById('guestEmail').value,
+      specialRequests: document.getElementById('specialRequests').value,
+      paymentMethod: selectedPayment,
+      adults: document.getElementById('adults').value,
+      children: document.getElementById('children').value
+    });
+
+    document.getElementById('bookingConfDetails').innerHTML = `
+      <div style="display:grid;gap:0.625rem">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Bron №:</span><strong>#${booking.id}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Mehmonxona:</span><strong>${booking.hotelName}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Xona:</span><strong>${booking.roomType}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Kirish:</span><strong>${formatDate(booking.checkin)}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Chiqish:</span><strong>${formatDate(booking.checkout)}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">To'lov:</span><strong>${DB.formatPrice(booking.totalPrice)}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">To'lov usuli:</span><strong>${booking.paymentMethod}</strong></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text-secondary)">Holat:</span><span class="badge badge-success">✅ ${booking.status}</span></div>
+      </div>
+    `;
+
+    document.getElementById('summaryPanel').style.display = 'none';
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'none';
+    goStep(4);
+    showToast('🎉 Bron muvaffaqiyatli tasdiqlandi!', 'success');
+  }
+</script>
+</body>
+</html>

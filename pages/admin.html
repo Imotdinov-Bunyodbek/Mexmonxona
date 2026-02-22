@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    .admin-layout { display: flex; min-height: 100vh; padding-top: 70px; }
+    .sidebar { width: 250px; flex-shrink: 0; background: var(--primary); padding: 1.5rem 0; position: fixed; top: 70px; bottom: 0; overflow-y: auto; z-index: 100; }
+    .sidebar-section { margin-bottom: 0.5rem; }
+    .sidebar-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); padding: 0.75rem 1.5rem 0.375rem; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 0.75rem 1.5rem; color: rgba(255,255,255,0.7); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: var(--transition); border: none; background: none; width: 100%; text-align: left; }
+    .sidebar-link:hover { background: rgba(232,184,109,0.1); color: var(--accent); }
+    .sidebar-link.active { background: rgba(232,184,109,0.15); color: var(--accent); border-right: 3px solid var(--accent); }
+    .admin-main { margin-left: 250px; flex: 1; padding: 2rem; background: var(--bg-light); min-height: calc(100vh - 70px); }
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card { background: white; border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border); display: flex; align-items: flex-start; gap: 1rem; }
+    .stat-icon { width: 50px; height: 50px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+    .stat-change { font-size: 0.75rem; color: var(--success); margin-top: 0.25rem; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { background: var(--bg-light); padding: 0.875rem 1rem; text-align: left; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); border-bottom: 2px solid var(--border); }
+    .admin-table td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; vertical-align: middle; }
+    .admin-table tr:hover td { background: var(--bg-light); }
+    .admin-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; }
+    .admin-card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .admin-card-header h3 { font-size: 1rem; font-weight: 700; }
+    .admin-card-body { padding: 1.5rem; }
+    .chart-bar-wrap { margin-bottom: 0.75rem; }
+    .chart-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.25rem; color: var(--text-secondary); }
+    .chart-bar { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
+    .chart-fill { height: 100%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-radius: 10px; transition: width 0.8s ease; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    @media(max-width:768px) { .sidebar { transform: translateX(-100%); } .admin-main { margin-left: 0; } }
+  </style>
+</head>
+<body>
+<div id="navbarContainer"></div>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div style="padding:1rem 1.5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.1)">
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.25rem">Admin panel</div>
+      <div style="font-weight:700;color:white" id="adminName">-</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Asosiy</div>
+      <button class="sidebar-link active" onclick="showSection('dashboard')">📊 Dashboard</button>
+      <button class="sidebar-link" onclick="showSection('bookings')">📅 Bronlar</button>
+      <button class="sidebar-link" onclick="showSection('payments')">💳 To'lovlar</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Boshqaruv</div>
+      <button class="sidebar-link" onclick="showSection('hotels')">🏨 Mehmonxonalar</button>
+      <button class="sidebar-link" onclick="showSection('rooms')">🛏️ Xonalar</button>
+      <button class="sidebar-link" onclick="showSection('users')">👥 Foydalanuvchilar</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Hisobot</div>
+      <button class="sidebar-link" onclick="showSection('reports')">📈 Hisobotlar</button>
+    </div>
+    <div style="padding:1rem 1.5rem;margin-top:auto;border-top:1px solid rgba(255,255,255,0.1);position:absolute;bottom:0;width:100%">
+      <button class="sidebar-link" onclick="handleAdminLogout()" style="color:rgba(239,68,68,0.8)">🚪 Chiqish</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+
+    <!-- Dashboard -->
+    <div class="page-section active" id="section-dashboard">
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:1.5rem">📊 Dashboard</h2>
+      <div class="stat-cards" id="statCards"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div class="admin-card">
+          <div class="admin-card-header"><h3>📅 So'nggi Bronlar</h3></div>
+          <div class="admin-card-body" id="recentBookings"></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><h3>📊 Mehmonxona Bandligi</h3></div>
+          <div class="admin-card-body" id="occupancyChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings -->
+    <div class="page-section" id="section-bookings">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <h2 style="font-size:1.5rem;font-weight:800">📅 Barcha Bronlar</h2>
+        <div class="form-group" style="margin:0;width:200px">
+          <input type="text" class="form-control" placeholder="Qidirish..." oninput="filterBookings(this.value)" style="padding:0.5rem 0.875rem">
+        </div>
+      </div>
+      <div class="admin-card">
+        <div style="overflow-x:auto">
+          <table class="admin-table" id="bookingsTable">
+            <thead><tr>
+              <th>Bron №</th><th>Mehmon</th><th>Mehmonxona</th><th>Xona</th><th>Kirish</th><th>Chiqish</th><th>Summa</th><th>Holat</th><th>Amal</th>
+            </tr></thead>
+            <tbody id="bookingsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="page-section" id="section-payments">
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:1.5rem">💳 To'lovlar Nazorati</h2>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(16,185,129,0.1)">💰</div>
+          <div><div class="stat-label">Bugungi daromad</div><div class="stat-value" id="todayRevenue">0</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(232,184,109,0.1)">📅</div>
+          <div><div class="stat-label">Oylik daromad</div><div class="stat-value" id="monthRevenue">0</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(59,130,246,0.1)">🧾</div>
+          <div><div class="stat-label">Jami to'lovlar</div><div class="stat-value" id="totalPayments">0</div></div>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header"><h3>To'lovlar Ro'yxati</h3></div>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>To'lov №</th><th>Bron №</th><th>Mehmon</th><th>Summa</th><th>Usul</th><th>Sana</th><th>Holat</th></tr></thead>
+            <tbody id="paymentsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hotels -->
+    <div class="page-section" id="section-hotels">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <h2 style="font-size:1.5rem;font-weight:800">🏨 Mehmonxonalar</h2>
+        <button class="btn btn-primary" onclick="showAddHotelModal()">+ Yangi Mehmonxona</button>
+      </div>
+      <div class="admin-card">
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>Rasm</th><th>Nomi</th><th>Shahar</th><th>Yulduzlar</th><th>Reyting</th><th>Xonalar</th><th>Amal</th></tr></thead>
+            <tbody id="hotelsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rooms -->
+    <div class="page-section" id="section-rooms">
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:1.5rem">🛏️ Xonalar Bandligi</h2>
+      <div class="form-group" style="max-width:300px;margin-bottom:1.5rem">
+        <label class="form-label">Mehmonxona tanlang</label>
+        <select class="form-control" id="roomsHotelSelect" onchange="renderRoomsTable(this.value)">
+          <option value="">-- Tanlang --</option>
+        </select>
+      </div>
+      <div id="roomsTableWrap"></div>
+    </div>
+
+    <!-- Users -->
+    <div class="page-section" id="section-users">
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:1.5rem">👥 Foydalanuvchilar</h2>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead><tr><th>ID</th><th>Ism</th><th>Email</th><th>Telefon</th><th>Rol</th><th>Ro'yxatdan o'tgan</th></tr></thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Reports -->
+    <div class="page-section" id="section-reports">
+      <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:1.5rem">📈 Hisobotlar</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div class="admin-card">
+          <div class="admin-card-header"><h3>Kunlik Daromad</h3></div>
+          <div class="admin-card-body" id="dailyReport"></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><h3>To'lov Usullari</h3></div>
+          <div class="admin-card-body" id="paymentMethodReport"></div>
+        </div>
+        <div class="admin-card" style="grid-column:span 2">
+          <div class="admin-card-header"><h3>📊 Mehmonxona Hisoboti</h3></div>
+          <div class="admin-card-body" id="hotelReport"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add Hotel Modal -->
+<div id="addHotelModal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">+ Yangi Mehmonxona Qo'shish</h3>
+      <button class="modal-close" onclick="document.getElementById('addHotelModal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Mehmonxona nomi</label><input class="form-control" id="newHotelName" placeholder="Mehmonxona nomi"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Shahar</label>
+          <select class="form-control" id="newHotelCity">
+            <option>Toshkent</option><option>Samarqand</option><option>Buxoro</option><option>Navoiy</option><option>Xiva</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Yulduzlar</label>
+          <select class="form-control" id="newHotelStars"><option value="3">3 ★</option><option value="4">4 ★</option><option value="5">5 ★</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Manzil</label><input class="form-control" id="newHotelAddress" placeholder="To'liq manzil"></div>
+      <div class="form-group"><label class="form-label">Rasm URL</label><input class="form-control" id="newHotelImage" placeholder="https://..."></div>
+      <div class="form-group"><label class="form-label">Tavsif</label><textarea class="form-control" id="newHotelDesc" rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('addHotelModal').classList.add('hidden')">Bekor</button>
+      <button class="btn btn-primary" onclick="addHotel()">Qo'shish</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  // Admin check
+  const user = DB.getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    window.location.href = 'login.html';
+  }
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('');
+  document.getElementById('adminName').textContent = user?.name || 'Admin';
+
+  function showSection(name) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.target.classList.add('active');
+    loadSectionData(name);
+  }
+
+  function loadSectionData(name) {
+    if (name === 'dashboard') renderDashboard();
+    else if (name === 'bookings') renderBookings();
+    else if (name === 'hotels') renderHotels();
+    else if (name === 'rooms') renderRoomsPage();
+    else if (name === 'users') renderUsers();
+    else if (name === 'payments') renderPayments();
+    else if (name === 'reports') renderReports();
+  }
+
+  // DASHBOARD
+  function renderDashboard() {
+    const bookings = DB.getBookings();
+    const hotels = DB.getHotels();
+    const users = DB.getUsers();
+    const payments = DB.getPayments();
+    const totalRevenue = payments.reduce((s,p) => s + p.amount, 0);
+    const todayRev = DB.getDailyRevenue();
+    const availableRooms = hotels.flatMap(h => h.rooms).filter(r => r.available).length;
+
+    document.getElementById('statCards').innerHTML = `
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(232,184,109,0.1)">🏨</div><div><div class="stat-label">Jami Mehmonxonalar</div><div class="stat-value">${hotels.length}</div><div class="stat-change">↑ Faol</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1)">📅</div><div><div class="stat-label">Jami Bronlar</div><div class="stat-value">${bookings.length}</div><div class="stat-change">↑ ${bookings.filter(b => new Date(b.createdAt).toDateString() === new Date().toDateString()).length} bugun</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(59,130,246,0.1)">👥</div><div><div class="stat-label">Foydalanuvchilar</div><div class="stat-value">${users.length}</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(234,179,8,0.1)">💰</div><div><div class="stat-label">Jami Daromad</div><div class="stat-value" style="font-size:1.1rem">${DB.formatPrice(totalRevenue)}</div><div class="stat-change">Bugun: ${DB.formatPrice(todayRev)}</div></div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(139,92,246,0.1)">🛏️</div><div><div class="stat-label">Bo'sh Xonalar</div><div class="stat-value">${availableRooms}</div></div></div>
+    `;
+
+    const recent = bookings.slice(-5).reverse();
+    document.getElementById('recentBookings').innerHTML = recent.length === 0 ? '<p style="color:var(--text-secondary);text-align:center">Bronlar yo\'q</p>' :
+      recent.map(b => `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.625rem 0;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:600;font-size:0.875rem">${b.guestName}</div><div style="font-size:0.78rem;color:var(--text-secondary)">${b.hotelName}</div></div>
+        <span class="badge badge-success">${DB.formatPrice(b.totalPrice)}</span>
+      </div>`).join('');
+
+    const occupancy = hotels.slice(0, 5).map(h => {
+      const total = h.rooms.length;
+      const booked = h.rooms.filter(r => !r.available).length;
+      const pct = total > 0 ? Math.round(booked/total*100) : 0;
+      return `<div class="chart-bar-wrap"><div class="chart-label"><span>${h.name.substring(0,20)}</span><span>${pct}%</span></div><div class="chart-bar"><div class="chart-fill" style="width:${pct}%"></div></div></div>`;
+    }).join('');
+    document.getElementById('occupancyChart').innerHTML = occupancy || '<p style="color:var(--text-secondary)">Ma\'lumot yo\'q</p>';
+  }
+
+  // BOOKINGS
+  function renderBookings() {
+    const bookings = DB.getBookings().reverse();
+    renderBookingsTable(bookings);
+  }
+
+  function renderBookingsTable(bookings) {
+    document.getElementById('bookingsTableBody').innerHTML = bookings.length === 0 ? 
+      '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text-secondary)">Bronlar yo\'q</td></tr>' :
+      bookings.map(b => `<tr>
+        <td><strong>#${b.id}</strong></td>
+        <td>${b.guestName}<br><span style="font-size:0.75rem;color:var(--text-secondary)">${b.guestPhone||''}</span></td>
+        <td>${b.hotelName}</td>
+        <td>${b.roomType}</td>
+        <td>${formatDate(b.checkin)}</td>
+        <td>${formatDate(b.checkout)}</td>
+        <td><strong>${DB.formatPrice(b.totalPrice)}</strong></td>
+        <td><span class="badge badge-success">${b.status}</span></td>
+        <td><button class="btn btn-sm btn-danger" onclick="cancelBooking(${b.id})">Bekor</button></td>
+      </tr>`).join('');
+  }
+
+  function filterBookings(q) {
+    const filtered = DB.getBookings().filter(b =>
+      b.guestName?.toLowerCase().includes(q.toLowerCase()) ||
+      b.hotelName?.toLowerCase().includes(q.toLowerCase())
+    );
+    renderBookingsTable(filtered);
+  }
+
+  function cancelBooking(id) {
+    if (!confirm('Bu bronni bekor qilasizmi?')) return;
+    const bookings = DB.getBookings().map(b => b.id === id ? {...b, status: 'Bekor qilindi'} : b);
+    DB.saveBookings(bookings);
+    renderBookings();
+    showToast('Bron bekor qilindi', 'warning');
+  }
+
+  // HOTELS
+  function renderHotels() {
+    const hotels = DB.getHotels();
+    document.getElementById('hotelsTableBody').innerHTML = hotels.map(h => `<tr>
+      <td><img src="${h.image}" style="width:60px;height:40px;object-fit:cover;border-radius:6px" onerror="this.src='https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=100'"></td>
+      <td><strong>${h.name}</strong></td>
+      <td>${h.city}</td>
+      <td>${'⭐'.repeat(h.stars)}</td>
+      <td>${h.rating}</td>
+      <td>${h.rooms.length} xona (${h.rooms.filter(r=>r.available).length} bo'sh)</td>
+      <td><button class="btn btn-sm btn-outline" onclick="editHotel(${h.id})">✏️ Tahrir</button></td>
+    </tr>`).join('');
+  }
+
+  function showAddHotelModal() {
+    document.getElementById('addHotelModal').classList.remove('hidden');
+  }
+
+  function addHotel() {
+    const name = document.getElementById('newHotelName').value.trim();
+    if (!name) { showToast('Mehmonxona nomi kiritng', 'warning'); return; }
+    DB.addHotel({
+      name,
+      city: document.getElementById('newHotelCity').value,
+      stars: parseInt(document.getElementById('newHotelStars').value),
+      rating: 4.0,
+      reviews: 0,
+      description: document.getElementById('newHotelDesc').value,
+      address: document.getElementById('newHotelAddress').value,
+      image: document.getElementById('newHotelImage').value || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800',
+      amenities: ['Wi-Fi', 'Restorant'],
+      rooms: []
+    });
+    document.getElementById('addHotelModal').classList.add('hidden');
+    showToast('Mehmonxona qo\'shildi!', 'success');
+    renderHotels();
+  }
+
+  function editHotel(id) {
+    showToast('Tahrirlash xususiyati ishlab chiqilmoqda', 'info');
+  }
+
+  // ROOMS
+  function renderRoomsPage() {
+    const hotels = DB.getHotels();
+    const sel = document.getElementById('roomsHotelSelect');
+    sel.innerHTML = '<option value="">-- Tanlang --</option>' + hotels.map(h => `<option value="${h.id}">${h.name}</option>`).join('');
+  }
+
+  function renderRoomsTable(hotelId) {
+    if (!hotelId) { document.getElementById('roomsTableWrap').innerHTML = ''; return; }
+    const hotel = DB.getHotels().find(h => h.id == hotelId);
+    if (!hotel) return;
+    document.getElementById('roomsTableWrap').innerHTML = `
+      <div class="admin-card">
+        <div class="admin-card-header"><h3>${hotel.name} - Xonalar</h3></div>
+        <table class="admin-table">
+          <thead><tr><th>Xona №</th><th>Turi</th><th>Sig'im</th><th>Narxi</th><th>Holat</th><th>Amal</th></tr></thead>
+          <tbody>${hotel.rooms.map(r => `<tr>
+            <td>#${r.id}</td>
+            <td>${r.type}</td>
+            <td>👥 ${r.capacity} kishi</td>
+            <td>${DB.formatPrice(r.price)}</td>
+            <td><span class="badge ${r.available?'badge-success':'badge-danger'}">${r.available?'✅ Bo\'sh':'❌ Band'}</span></td>
+            <td>
+              <button class="btn btn-sm ${r.available?'btn-danger':'btn-success'}" onclick="toggleRoom(${hotel.id},${r.id},${r.available})">
+                ${r.available?'Band qilish':'Bo\'shatish'}
+              </button>
+              <button class="btn btn-sm btn-outline" onclick="updateRoomPrice(${hotel.id},${r.id})">💲 Narx</button>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function toggleRoom(hotelId, roomId, currentAvailable) {
+    DB.updateHotelRoom(hotelId, roomId, { available: !currentAvailable });
+    renderRoomsTable(hotelId);
+    showToast('Xona holati yangilandi', 'success');
+  }
+
+  function updateRoomPrice(hotelId, roomId) {
+    const price = prompt('Yangi narxni kiriting (so\'m):');
+    if (!price || isNaN(price)) return;
+    DB.updateHotelRoom(hotelId, roomId, { price: parseInt(price) });
+    renderRoomsTable(hotelId);
+    showToast('Narx yangilandi!', 'success');
+  }
+
+  // USERS
+  function renderUsers() {
+    const users = DB.getUsers();
+    document.getElementById('usersTableBody').innerHTML = users.map(u => `<tr>
+      <td>#${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>${u.phone || '-'}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-warning':'badge-info'}">${u.role}</span></td>
+      <td>${new Date(u.createdAt).toLocaleDateString('uz-UZ')}</td>
+    </tr>`).join('');
+  }
+
+  // PAYMENTS
+  function renderPayments() {
+    const payments = DB.getPayments();
+    document.getElementById('todayRevenue').textContent = DB.formatPrice(DB.getDailyRevenue());
+    document.getElementById('monthRevenue').textContent = DB.formatPrice(DB.getMonthlyRevenue());
+    document.getElementById('totalPayments').textContent = payments.length;
+    document.getElementById('paymentsTableBody').innerHTML = payments.reverse().map(p => `<tr>
+      <td>#${p.id}</td>
+      <td>#${p.bookingId}</td>
+      <td>${p.guestName}</td>
+      <td><strong>${DB.formatPrice(p.amount)}</strong></td>
+      <td>${p.method}</td>
+      <td>${new Date(p.date).toLocaleDateString('uz-UZ')}</td>
+      <td><span class="badge badge-success">${p.status}</span></td>
+    </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-secondary)">To\'lovlar yo\'q</td></tr>';
+  }
+
+  // REPORTS
+  function renderReports() {
+    const payments = DB.getPayments();
+    const bookings = DB.getBookings();
+    const hotels = DB.getHotels();
+
+    // Last 7 days
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const ds = d.toDateString();
+      const rev = payments.filter(p => new Date(p.date).toDateString() === ds).reduce((s,p)=>s+p.amount,0);
+      days.push({ label: d.toLocaleDateString('uz-UZ', {weekday:'short', day:'numeric'}), rev });
+    }
+    const maxRev = Math.max(...days.map(d=>d.rev), 1);
+    document.getElementById('dailyReport').innerHTML = days.map(d => `
+      <div class="chart-bar-wrap">
+        <div class="chart-label"><span>${d.label}</span><span>${DB.formatPrice(d.rev)}</span></div>
+        <div class="chart-bar"><div class="chart-fill" style="width:${(d.rev/maxRev*100)}%"></div></div>
+      </div>`).join('');
+
+    // Payment methods
+    const methods = {};
+    payments.forEach(p => { methods[p.method] = (methods[p.method]||0) + p.amount; });
+    const totalM = Object.values(methods).reduce((s,v)=>s+v,1);
+    document.getElementById('paymentMethodReport').innerHTML = Object.entries(methods).map(([m,v]) => `
+      <div class="chart-bar-wrap">
+        <div class="chart-label"><span>${m}</span><span>${Math.round(v/totalM*100)}%</span></div>
+        <div class="chart-bar"><div class="chart-fill" style="width:${v/totalM*100}%"></div></div>
+      </div>`).join('') || '<p style="color:var(--text-secondary)">Ma\'lumot yo\'q</p>';
+
+    // Hotel report
+    document.getElementById('hotelReport').innerHTML = `
+      <table class="admin-table">
+        <thead><tr><th>Mehmonxona</th><th>Shahar</th><th>Xonalar</th><th>Bo'sh</th><th>Bronlar</th></tr></thead>
+        <tbody>${hotels.map(h => `<tr>
+          <td>${h.name}</td><td>${h.city}</td><td>${h.rooms.length}</td>
+          <td>${h.rooms.filter(r=>r.available).length}</td>
+          <td>${bookings.filter(b=>b.hotelId===h.id).length}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+
+  function handleAdminLogout() {
+    DB.logout();
+    window.location.href = 'login.html';
+  }
+
+  // Initial load
+  renderDashboard();
+</script>
+</body>
+</html>

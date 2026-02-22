@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kontakt - MexmonXona</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+<div id="navbarContainer"></div>
+<div style="height:70px"></div>
+
+<section style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:4rem 2rem;text-align:center">
+  <div class="section-badge" style="background:rgba(232,184,109,0.15);color:var(--accent)">📞 Kontakt</div>
+  <h1 style="font-family:'Playfair Display',serif;font-size:2.5rem;color:white;margin-top:0.75rem">Biz Bilan Bog'laning</h1>
+  <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem">Har qanday savol uchun 24/7 xizmatdamiz</p>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- Info -->
+      <div class="contact-info-card">
+        <h2>Murojaat Qiling</h2>
+        <p>Mehmonxona bron qilish, tur paketlar va boshqa xizmatlar haqida savollaringiz bo'lsa, bizga murojaat qiling.</p>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div><h4>Manzil</h4><p>Toshkent shahar, Amir Temur ko'chasi, 108-uy</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div><h4>Telefon</h4><p>+998 71 200-00-00</p><p style="font-size:0.8rem;color:rgba(255,255,255,0.5)">24/7 qo'llab-quvvatlash</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div><h4>E-mail</h4><p>info@mexmonxona.uz</p><p style="font-size:0.8rem;color:rgba(255,255,255,0.5)">1-2 soat ichida javob beramiz</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🕐</div>
+          <div><h4>Ish vaqti</h4><p>Kechayu kunduz, 365 kun</p></div>
+        </div>
+        <div style="margin-top:2rem">
+          <h4 style="color:rgba(255,255,255,0.7);font-size:0.85rem;margin-bottom:0.875rem;text-transform:uppercase;letter-spacing:1px">Ijtimoiy tarmoqlar</h4>
+          <div class="social-links">
+            <a href="#" class="social-link" title="Facebook">📘</a>
+            <a href="#" class="social-link" title="Instagram">📸</a>
+            <a href="#" class="social-link" title="Telegram">💙</a>
+            <a href="#" class="social-link" title="YouTube">▶️</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="contact-form-card">
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.75rem;margin-bottom:0.5rem">Xabar Yuboring</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem">Savolingizni qoldiring, tez orada javob beramiz</p>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Ism</label><input class="form-control" id="contactName" placeholder="Ismingiz"></div>
+          <div class="form-group"><label class="form-label">Telefon</label><input class="form-control" id="contactPhone" placeholder="+998 90 000-0000"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="contactEmail" type="email" placeholder="email@example.com"></div>
+        <div class="form-group"><label class="form-label">Mavzu</label>
+          <select class="form-control" id="contactSubject">
+            <option>Bron qilish to'g'risida</option>
+            <option>Tur paketlar</option>
+            <option>To'lov masalalari</option>
+            <option>Texnik muammo</option>
+            <option>Boshqa</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Xabar</label><textarea class="form-control" id="contactMessage" rows="5" placeholder="Savolingiz yoki xabaringizni yozing..."></textarea></div>
+        <button class="btn btn-primary btn-lg w-full" onclick="sendMessage()">📨 Xabar Yuborish</button>
+        <p style="margin-top:0.875rem;font-size:0.8rem;color:var(--text-secondary);text-align:center">🔒 Ma'lumotlaringiz maxfiy saqlanadi</p>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div style="margin-top:3rem;border-radius:var(--radius-xl);overflow:hidden;height:350px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
+      <div style="text-align:center;color:var(--text-secondary)">
+        <div style="font-size:3rem;margin-bottom:1rem">🗺️</div>
+        <h3 style="font-weight:700;margin-bottom:0.5rem">Xarita</h3>
+        <p>Toshkent shahar, Amir Temur ko'chasi, 108</p>
+        <a href="https://www.google.com/maps" target="_blank" class="btn btn-primary" style="margin-top:1rem">Google Maps →</a>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div style="margin-top:4rem">
+      <div class="section-header">
+        <div class="section-badge">❓ FAQ</div>
+        <h2 class="section-title">Ko'p So'raladigan Savollar</h2>
+      </div>
+      <div id="faqList"></div>
+    </div>
+  </div>
+</section>
+
+<div id="footerContainer"></div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.getElementById('navbarContainer').innerHTML = renderNavbar('contact');
+  document.getElementById('footerContainer').innerHTML = renderFooter();
+
+  const faqs = [
+    { q: 'Qanday qilib xona bron qilaman?', a: 'Mehmonxona ro\'yxatidan kerakli mehmonxonani tanlang, "Bron qilish" tugmasini bosing, sana va xona turini tanlang, ma\'lumotlaringizni kiriting va to\'lovni amalga oshiring.' },
+    { q: 'Bronni bekor qila olamanmi?', a: 'Ha, bronni kirish sanasidan kamida 24 soat oldin bekor qilishingiz mumkin. Bekor qilish shaxsiy kabinetingiz orqali amalga oshiriladi.' },
+    { q: 'Qanday to\'lov usullari mavjud?', a: 'Naqd pul, bank kartasi, Click, Payme, Uzum Bank va bank o\'tkazmasi orqali to\'lov qilishingiz mumkin.' },
+    { q: 'Bola uchun alohida to\'lov kerakmi?', a: '12 yoshgacha bo\'lgan bolalar ota-ona bilan bir xonada bepul qoladi. 12 yoshdan katta bolalar katta kishilar tarifi bo\'yicha hisob-kitob qilinadi.' },
+    { q: 'Airport transfer xizmati bormi?', a: 'Ha, ko\'pchilik mehmonxonalarimiz airport transfer xizmatini taklif etadi. Bronlashda bu xizmatni qo\'shishingiz mumkin.' },
+  ];
+
+  document.getElementById('faqList').innerHTML = faqs.map((faq, i) => `
+    <div style="background:white;border-radius:var(--radius-md);padding:1.25rem 1.5rem;margin-bottom:0.75rem;border:1px solid var(--border);cursor:pointer" onclick="toggleFaq(${i})">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-weight:700" id="faqQ${i}">
+        <span>❓ ${faq.q}</span>
+        <span style="font-size:1.25rem;transition:var(--transition)" id="faqIcon${i}">+</span>
+      </div>
+      <div id="faqA${i}" style="display:none;margin-top:0.875rem;color:var(--text-secondary);font-size:0.9rem;line-height:1.6">${faq.a}</div>
+    </div>
+  `).join('');
+
+  function toggleFaq(i) {
+    const el = document.getElementById(`faqA${i}`);
+    const icon = document.getElementById(`faqIcon${i}`);
+    const isOpen = el.style.display !== 'none';
+    el.style.display = isOpen ? 'none' : 'block';
+    icon.textContent = isOpen ? '+' : '−';
+  }
+
+  function sendMessage() {
+    const name = document.getElementById('contactName').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const msg = document.getElementById('contactMessage').value.trim();
+    if (!name || !phone || !msg) { showToast('Iltimos, kerakli maydonlarni to\'ldiring', 'warning'); return; }
+    showToast('✅ Xabaringiz yuborildi! Tez orada bog\'lanamiz.', 'success');
+    document.getElementById('contactName').value = '';
+    document.getElementById('contactPhone').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactMessage').value = '';
+  }
+</script>
+</body>
+</html>
